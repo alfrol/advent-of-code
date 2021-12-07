@@ -3,6 +3,7 @@ import utils.FileUtils;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -14,9 +15,9 @@ public class Main {
         LinkedList<Integer> numbers = Arrays.stream(components[0].split(","))
                 .map(Integer::parseInt)
                 .collect(Collectors.toCollection(LinkedList::new));
-        Board[] boards = Arrays.stream(components[1].trim().split("\n\n"))
+        List<Board> boards = Arrays.stream(components[1].trim().split("\n\n"))
                 .map(Board::fromString)
-                .toArray(Board[]::new);
+                .collect(Collectors.toList());
 
         Board winningBoard = getWinningBoard(numbers, boards);
 
@@ -25,14 +26,21 @@ public class Main {
         }
     }
 
-    private static Board getWinningBoard(LinkedList<Integer> numbers, Board[] boards) {
+    private static Board getWinningBoard(LinkedList<Integer> numbers, List<Board> boards) {
         while (!numbers.isEmpty()) {
-            int num = numbers.peekFirst();
+            int num = numbers.getFirst();
 
-            for (Board board : boards) {
+            for (int i = 0; i < boards.size(); ) {
+                Board board = boards.get(i);
                 board.markValue(num);
                 if (board.isWinningBoard()) {
-                    return board;
+                    if (boards.size() == 1) {
+                        return board;
+                    }
+
+                    boards.remove(board);
+                } else {
+                    i++;
                 }
             }
 
