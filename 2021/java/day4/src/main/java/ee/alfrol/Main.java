@@ -1,4 +1,6 @@
-import model.Board;
+package ee.alfrol;
+
+import ee.alfrol.model.Board;
 import utils.FileUtils;
 
 import java.util.Arrays;
@@ -20,6 +22,8 @@ public class Main {
                 .collect(Collectors.toList());
 
         Board winningBoard = getWinningBoard(numbers, boards);
+
+        System.out.println(winningBoard);
 
         if (winningBoard != null) {
             System.out.println(winningBoard.getSumOfUnmarkedValues() * numbers.getFirst());

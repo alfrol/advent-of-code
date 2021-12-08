@@ -1,4 +1,4 @@
-package model;
+package ee.alfrol.model;
 
 import java.util.Arrays;
 
