@@ -11,20 +11,23 @@ import java.util.function.Predicate;
 
 public class Main {
 
-    public static void main(String[] args) {
-        final int maxCountOfOverlappingLines = 2;
+    private static final int MAX_COUNT_OF_OVERLAPPING_LINES = 2;
 
+
+    public static void main(String[] args) {
         String input = FileUtils.readFile(Main.class, "/input.txt").orElseThrow();
 
         List<Line> lines = getLines(input);
         List<Line> horizontalAndVerticalLines =
-                getLinesByCriteria(lines, line -> line.isVertical() || line.isHorizontal());
-        Point largestPoint = getLargestPoint(lines);
-        int pointsCountWhereLinesOverlap = countPointsWhereAtLeastXLinesOverlap(horizontalAndVerticalLines,
-                                                                                largestPoint,
-                                                                                maxCountOfOverlappingLines);
+                getLinesByCriteria(lines, line -> !line.isDiagonal());
 
-        System.out.println(pointsCountWhereLinesOverlap);
+        System.out.println(countPoints(horizontalAndVerticalLines));
+        System.out.println(countPoints(lines));
+    }
+
+    public static int countPoints(List<Line> lines) {
+        Point largestPoint = getLargestPoint(lines);
+        return countPointsWhereAtLeastXLinesOverlap(lines, largestPoint);
     }
 
     public static List<Line> getLines(String input) {
@@ -56,30 +59,28 @@ public class Main {
         int y = 0;
 
         for (Line line : lines) {
-            if (line.getStart().x() > x) {
-                x = line.getStart().x();
-            } else if (line.getEnd().x() > x) {
-                x = line.getEnd().x();
+            if (line.start().x() > x) {
+                x = line.start().x();
+            } else if (line.end().x() > x) {
+                x = line.end().x();
             }
 
-            if (line.getStart().y() > y) {
-                y = line.getStart().y();
-            } else if (line.getEnd().y() > y) {
-                y = line.getEnd().y();
+            if (line.start().y() > y) {
+                y = line.start().y();
+            } else if (line.end().y() > y) {
+                y = line.end().y();
             }
         }
 
         return new Point(x, y);
     }
 
-    public static int countPointsWhereAtLeastXLinesOverlap(List<Line> lines,
-                                                           Point largestPoint,
-                                                           final int maxCountOfOverlappingLines) {
+    public static int countPointsWhereAtLeastXLinesOverlap(List<Line> lines, Point largestPoint) {
         int pointsCount = 0;
 
         for (int x = 0; x <= largestPoint.x(); x++) {
             for (int y = 0; y <= largestPoint.y(); y++) {
-                if (checkPointHasAtLeastXOverlappingLines(lines, new Point(x, y), maxCountOfOverlappingLines)) {
+                if (checkPointHasAtLeastXOverlappingLines(lines, new Point(x, y))) {
                     pointsCount += 1;
                 }
             }
@@ -88,9 +89,7 @@ public class Main {
         return pointsCount;
     }
 
-    private static boolean checkPointHasAtLeastXOverlappingLines(List<Line> lines,
-                                                                 Point point,
-                                                                 final int maxCountOfOverlappingLines) {
+    private static boolean checkPointHasAtLeastXOverlappingLines(List<Line> lines, Point point) {
         int overlapsCount = 0;
 
         for (Line line : lines) {
@@ -98,7 +97,7 @@ public class Main {
                 overlapsCount += 1;
             }
 
-            if (overlapsCount >= maxCountOfOverlappingLines) {
+            if (overlapsCount >= MAX_COUNT_OF_OVERLAPPING_LINES) {
                 return true;
             }
         }
